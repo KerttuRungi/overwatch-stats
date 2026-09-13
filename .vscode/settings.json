@@ -1,0 +1,7 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python.defaultInterpreterPath": "${workspaceFolder}/overwatch-stats/overwatch-backend/.venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/overwatch-stats/overwatch-backend/.venv/Lib/site-packages"
+    ]
+}

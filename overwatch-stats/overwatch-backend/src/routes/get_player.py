@@ -1,8 +1,21 @@
 import httpx
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 router = APIRouter()
 api_url = "https://overfast-api.tekrop.fr"
+
+class PlayerProfileEndorsementResponse(BaseModel):
+    level: int
+    
+class PlayerProfileSummaryResponse(BaseModel):
+    username: str
+    avatar: str
+    namecard: str
+    endorsement: PlayerProfileEndorsementResponse
+
+class PlayerProfileResponse(BaseModel):
+    summary: PlayerProfileSummaryResponse
 
 @router.get("/players/{battle_tag}")
 async def get_player_stats(battle_tag: str):
@@ -15,4 +28,4 @@ async def get_player_stats(battle_tag: str):
             status_code=response.status_code, detail=response.json()
         )
 
-    return response.json()
+    return PlayerProfileResponse(**response.json())

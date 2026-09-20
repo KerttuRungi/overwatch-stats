@@ -16,3 +16,8 @@ class PlayersRepository:
         self.session.refresh(player)
 
         return player
+
+    def get_all_players(self) -> list[Players]:
+
+        statement = select(Players)
+        return self.session.exec(statement).all()

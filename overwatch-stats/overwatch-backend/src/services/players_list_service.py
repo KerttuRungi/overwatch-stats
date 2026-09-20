@@ -1,6 +1,5 @@
 from models.player import Players
 from repositories.players_list_repository import PlayersRepository
-from pydantic import BaseModel
 from schemas import PlayerProfileSummary
 
 class PlayersService:
@@ -19,3 +18,13 @@ class PlayersService:
             namecard=player_data.namecard,
         )
         return self.repository.add(add_player)
+
+    def get_all_players(self) -> list[PlayerProfileSummary]:
+        players = self.repository.get_all_players()
+        return [PlayerProfileSummary(
+            username=player.username,
+            avatar=player.avatar,
+            namecard=player.namecard
+        ) for player in players
+        ]
+    

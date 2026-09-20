@@ -7,4 +7,4 @@ class PlayerProfileSummary(BaseModel):
     username: str
     avatar: str
     namecard: str
-    endorsement: PlayerProfileEndorsementResponse
+    #endorsement: PlayerProfileEndorsementResponse

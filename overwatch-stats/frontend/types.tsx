@@ -6,3 +6,8 @@ export type PlayerProfile = {
 		namecard: string
 	}
 }
+export type PlayerProfileSummary = {
+	username: string
+	avatar: string
+	namecard: string
+}

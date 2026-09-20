@@ -1,6 +1,8 @@
 import { useState, type SubmitEvent } from 'react'
 import type { PlayerProfile } from '../../types'
 import { getPlayer } from '../api/routes/getPlayer'
+import { Plus } from "lucide-react"
+import { addPlayerToList } from '../api/routes/addPlayerToList'
 
 const battleTagPattern = /^[^-]+-\d{4}$/
 
@@ -31,6 +33,29 @@ function Search() {
 				requestError instanceof Error
 					? requestError.message
 					: 'Unable to load player',
+			)
+		} finally {
+			setIsLoading(false)
+		}
+	}
+	async function handleAddPlayer() {
+
+		if (!profile) {
+			setIsLoading(true)
+			setError('No player to add player to list.')
+			return
+		}
+		setIsLoading(true)
+		setError('')
+
+		try {
+			await addPlayerToList(profile.summary)
+			setProfile(null)
+		} catch (error) {
+			setError(
+				error instanceof Error
+					? error.message
+					: 'Unable to add player to list',
 			)
 		} finally {
 			setIsLoading(false)
@@ -77,6 +102,9 @@ function Search() {
 						<div className="endorsement">
 							<span>Endorsement</span>
 							{/* <strong>{profile.summary.endorsement.level}</strong> */}
+						</div>
+						<div className="">
+							<button onClick={handleAddPlayer} disabled={isLoading} type="button">{isLoading ? 'Adding...' : <Plus />}</button>
 						</div>
 					</div>
 				</article>

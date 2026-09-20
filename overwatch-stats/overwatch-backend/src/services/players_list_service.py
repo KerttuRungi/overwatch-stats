@@ -1,19 +1,14 @@
 from models.player import Players
 from repositories.players_list_repository import PlayersRepository
 from pydantic import BaseModel
-
-
-class PlayersListCreate(BaseModel):
-    username: str
-    avatar: str
-    namecard: str
+from schemas import PlayerProfileSummary
 
 class PlayersService:
 
     def __init__(self, repository: PlayersRepository):
         self.repository = repository
     
-    def add_comparison_player(self, player_data: PlayersListCreate):
+    def add_comparison_player(self, player_data: PlayerProfileSummary):
         existing_player = self.repository.get_player_by_user(player_data.username)
         if existing_player:
             raise ValueError(f"Player with username {player_data.username} already exists.")

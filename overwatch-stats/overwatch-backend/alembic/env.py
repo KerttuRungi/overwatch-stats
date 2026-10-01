@@ -5,6 +5,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlmodel import SQLModel
 from src.models.player import Players
+from src.models.player_stats import PlayerStats
 from alembic import context
 from dotenv import load_dotenv
 

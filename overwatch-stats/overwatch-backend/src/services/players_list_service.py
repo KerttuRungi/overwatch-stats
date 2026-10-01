@@ -27,4 +27,16 @@ class PlayersService:
             namecard=player.namecard
         ) for player in players
         ]
-    
+
+    def remove_comparison_player(self, username: str) -> PlayerProfileSummary:
+        player = self.repository.get_player_by_user(username)
+        if not player:
+            raise ValueError(f"Player with username {username} is not in the list.")
+
+        removed = PlayerProfileSummary(
+            username=player.username,
+            avatar=player.avatar,
+            namecard=player.namecard
+        )
+        self.repository.delete(player)
+        return removed

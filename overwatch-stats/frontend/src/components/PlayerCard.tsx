@@ -76,14 +76,25 @@ export default function PLayerCard({
           {/* <strong>{profile.summary.endorsement.level}</strong> */}
         </div>
         <div className="">
-          <button
-            onClick={handleAddPlayer}
-            disabled={isLoading}
-            type="button"
-            aria-label="Add player to list"
-          >
-            {isLoading ? "Adding..." : <Plus />}
-          </button>
+          {isInList ? (
+            <button
+              onClick={handleRemovePlayer}
+              disabled={isLoading}
+              type="button"
+              aria-label="Remove player from list"
+            >
+              {isLoading ? "Removing..." : <X />}
+            </button>
+          ) : (
+            <button
+              onClick={handleAddPlayer}
+              disabled={isLoading}
+              type="button"
+              aria-label="Add player to list"
+            >
+              {isLoading ? "Adding..." : <Plus />}
+            </button>
+          )}
         </div>
         {error && <p>{error}</p>}
       </div>

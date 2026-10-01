@@ -21,3 +21,7 @@ class PlayersRepository:
 
         statement = select(Players)
         return self.session.exec(statement).all()
+
+    def delete(self, player: Players) -> None:
+        self.session.delete(player)
+        self.session.commit()

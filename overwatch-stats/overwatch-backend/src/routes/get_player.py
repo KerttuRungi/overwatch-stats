@@ -1,7 +1,8 @@
+import os
 import httpx
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from schemas import  PlayerProfileSummary
 from sqlmodel import Session
 from database import get_session
 from repositories.players_list_repository import PlayersRepository
@@ -9,8 +10,10 @@ from services.players_list_service import PlayersService
 from schemas import PlayerProfileSummary
 
 
+load_dotenv()
+
 router = APIRouter()
-api_url = "https://overfast-api.tekrop.fr"
+api_url = os.getenv("OVERFAST_API_URL")
 
 class PlayerProfileResponse(BaseModel):
     summary: PlayerProfileSummary

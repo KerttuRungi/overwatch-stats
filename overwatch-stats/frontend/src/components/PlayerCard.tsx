@@ -7,12 +7,14 @@ import { removePlayerFromList } from "../api/routes/removePlayerFromList";
 type PlayerCardProps = {
   profile: PlayerProfile;
   isInList: boolean;
+  battleTag?: string;
   onListChanged?: () => void;
 };
 
 export default function PLayerCard({
   profile,
   isInList,
+  battleTag,
   onListChanged,
 }: PlayerCardProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +31,11 @@ export default function PLayerCard({
     }
 
     try {
-      await addPlayerToList(profile.summary);
+      // store the BattleTag as username so the backend can fetch stats for it
+      await addPlayerToList({
+        ...profile.summary,
+        username: battleTag ?? profile.summary.username,
+      });
       onListChanged?.();
     } catch (error) {
       setError(
@@ -45,7 +51,7 @@ export default function PLayerCard({
     setError("");
 
     try {
-      await removePlayerFromList(profile.summary.username);
+      await removePlayerFromList(battleTag ?? profile.summary.username);
       onListChanged?.();
     } catch (error) {
       setError(

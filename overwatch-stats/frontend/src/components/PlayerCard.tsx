@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import type { PlayerProfile } from "../../types";
 import { addPlayerToList } from "../api/routes/addPlayerToList";
+import { removePlayerFromList } from "../api/routes/removePlayerFromList";
 
 type PlayerCardProps = {
   profile: PlayerProfile;
+  isInList: boolean;
+  onListChanged?: () => void;
 };
 
-export default function PLayerCard({ profile }: PlayerCardProps) {
+export default function PLayerCard({
+  profile,
+  isInList,
+  onListChanged,
+}: PlayerCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -16,15 +23,14 @@ export default function PLayerCard({ profile }: PlayerCardProps) {
     setError("");
 
     if (!profile) {
-      setIsLoading(true);
+      setIsLoading(false);
       setError("No player to add player to list.");
       return;
     }
-    setIsLoading(true);
-    setError("");
 
     try {
       await addPlayerToList(profile.summary);
+      onListChanged?.();
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Unable to add player to list",
@@ -33,6 +39,25 @@ export default function PLayerCard({ profile }: PlayerCardProps) {
       setIsLoading(false);
     }
   }
+
+  async function handleRemovePlayer() {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await removePlayerFromList(profile.summary.username);
+      onListChanged?.();
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to remove player from list",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="profile-card">
       <img className="profile-banner" src={profile.summary.namecard} alt="" />
@@ -51,7 +76,12 @@ export default function PLayerCard({ profile }: PlayerCardProps) {
           {/* <strong>{profile.summary.endorsement.level}</strong> */}
         </div>
         <div className="">
-          <button onClick={handleAddPlayer} disabled={isLoading} type="button">
+          <button
+            onClick={handleAddPlayer}
+            disabled={isLoading}
+            type="button"
+            aria-label="Add player to list"
+          >
             {isLoading ? "Adding..." : <Plus />}
           </button>
         </div>

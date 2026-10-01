@@ -5,7 +5,12 @@ import PLayerCard from "./PlayerCard";
 
 const battleTagPattern = /^[^-]+-\d{4}$/;
 
-function Search() {
+type SearchProps = {
+  listedUsernames: Set<string>;
+  onListChanged: () => void;
+};
+
+function Search({ listedUsernames, onListChanged }: SearchProps) {
   const [battleTag, setBattleTag] = useState("");
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
   const [error, setError] = useState("");
@@ -62,7 +67,13 @@ function Search() {
         {error && <p className="status-message error-message">{error}</p>}
       </div>
 
-      {profile && <PLayerCard profile={profile} />}
+      {profile && (
+        <PLayerCard
+          profile={profile}
+          isInList={listedUsernames.has(profile.summary.username)}
+          onListChanged={onListChanged}
+        />
+      )}
     </section>
   );
 }

@@ -64,7 +64,7 @@ def test_get_all_players_returns_empty_list(service, repository):
     assert service.get_all_players() == []
 
 
-def test_remove_comparison_player_deletes_existing_player(service, repository):
+def test_remove_comparison_player_deletes_player(service, repository):
     player = Players(id=1, username="Tracer", avatar="a", namecard="n")
     repository.get_player_by_user.return_value = player
 

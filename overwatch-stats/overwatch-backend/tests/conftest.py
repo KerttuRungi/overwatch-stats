@@ -1,6 +1,7 @@
 import os
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
+os.environ.setdefault("OVERFAST_API_URL", "https://overfast-api.tekrop.fr")
 
 import httpx
 import pytest

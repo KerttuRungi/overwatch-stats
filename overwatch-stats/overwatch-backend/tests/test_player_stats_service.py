@@ -1,9 +1,9 @@
-from schemas import GeneralStats, PlayerStatsComparison
-from services.player_stats_service import most_wins, parse_general, top_heroes
+from schemas import GeneralStats, HeroStats, PlayerStatsComparison
+from services.player_stats_service import most_wins, top_heroes
 
 
-def hero(time_played: int) -> dict:
-    return {"games_played": 10, "games_won": 5, "games_lost": 5, "time_played": time_played, "winrate": 50.0}
+def hero(name: str, time_played: int) -> HeroStats:
+    return HeroStats(hero=name, games_played=10, games_won=5, time_played=time_played, winrate=50.0)
 
 
 def comparison(username: str, games_won: int | None) -> PlayerStatsComparison:
@@ -14,20 +14,15 @@ def comparison(username: str, games_won: int | None) -> PlayerStatsComparison:
 
 
 def test_top_heroes_sorted_by_time_played_and_limited_to_three():
-    data = {"heroes": {"ana": hero(100), "mercy": hero(500), "dva": hero(300), "genji": hero(200)}}
+    heroes = [hero("ana", 100), hero("mercy", 500), hero("dva", 300), hero("genji", 200)]
 
-    result = top_heroes(data)
+    result = top_heroes(heroes)
 
     assert [h.hero for h in result] == ["mercy", "dva", "genji"]
 
 
-def test_top_heroes_handles_missing_heroes():
-    assert top_heroes({"heroes": None}) == []
-
-
-def test_parse_general_returns_none_for_private_profile():
-    assert parse_general({"general": None}) is None
-    assert parse_general({}) is None
+def test_top_heroes_handles_no_heroes():
+    assert top_heroes([]) == []
 
 
 def test_most_wins_returns_all_tied_players_and_skips_errors():

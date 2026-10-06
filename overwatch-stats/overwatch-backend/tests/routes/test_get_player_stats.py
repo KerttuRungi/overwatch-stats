@@ -42,22 +42,25 @@ def add_player(session, username):
     return player
 
 
+OVERFAST_SUMMARY = {
+    "general": {
+        "games_played": 150,
+        "games_won": 80,
+        "games_lost": 70,
+        "time_played": 360000,
+        "winrate": 53.33,
+        "kda": 2.5,
+    },
+    "heroes": {
+        "tracer": {"games_played": 100, "games_won": 55, "time_played": 250000, "winrate": 55.0},
+        "genji": {"games_played": 50, "games_won": 25, "time_played": 110000, "winrate": 50.0},
+    },
+}
+
+
 def test_comparison_stats(client, session, overfast_api):
     add_player(session, "Tracer-1234")
-    overfast_api.respond(200, {
-        "general": {
-            "games_played": 150,
-            "games_won": 80,
-            "games_lost": 70,
-            "time_played": 360000,
-            "winrate": 53.33,
-            "kda": 2.5,
-        },
-        "heroes": {
-            "tracer": {"games_played": 100, "games_won": 55, "time_played": 250000, "winrate": 55.0},
-            "genji": {"games_played": 50, "games_won": 25, "time_played": 110000, "winrate": 50.0},
-        },
-    })
+    overfast_api.respond(200, OVERFAST_SUMMARY)
 
     response = client.get("/players/comparison-list/stats")
 

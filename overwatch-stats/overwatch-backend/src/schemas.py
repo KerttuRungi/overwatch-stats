@@ -23,6 +23,10 @@ class HeroStats(BaseModel):
     time_played: int
     winrate: float
 
+class PlayerStatsData(BaseModel):
+    general: GeneralStats | None = None
+    heroes: list[HeroStats] = []
+
 class PlayerStatsComparison(BaseModel):
     username: str
     avatar: str

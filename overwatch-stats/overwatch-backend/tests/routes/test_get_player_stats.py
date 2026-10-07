@@ -55,6 +55,10 @@ OVERFAST_SUMMARY = {
         "tracer": {"games_played": 100, "games_won": 55, "time_played": 250000, "winrate": 55.0},
         "genji": {"games_played": 50, "games_won": 25, "time_played": 110000, "winrate": 50.0},
     },
+    "roles": {
+        "damage": {"games_played": 150, "games_won": 80, "time_played": 360000, "winrate": 53.33},
+        "tank": None,
+    },
 }
 
 

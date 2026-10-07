@@ -12,13 +12,21 @@ class FakeOverfastApi:
         self.status_code = 200
         self.body = {}
         self.requested_urls = []
+        self.path_responses = {}
 
-    def respond(self, status_code: int, body: dict):
+    def respond(self, status_code: int, body: dict | list):
         self.status_code = status_code
         self.body = body
 
+    def respond_to_path(self, path: str, status_code: int, body: dict | list):
+        """Answer requests whose URL path ends with `path` differently from the default response."""
+        self.path_responses[path] = (status_code, body)
+
     def handler(self, request: httpx.Request) -> httpx.Response:
         self.requested_urls.append(str(request.url))
+        for path, (status_code, body) in self.path_responses.items():
+            if request.url.path.endswith(path):
+                return httpx.Response(status_code, json=body)
         return httpx.Response(self.status_code, json=self.body)
 
 @pytest.fixture

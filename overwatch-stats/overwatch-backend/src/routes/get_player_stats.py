@@ -7,9 +7,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from database import get_session
+from models.player import Players
 from repositories.player_stats_repository import PlayerStatsRepository
 from repositories.players_list_repository import PlayersRepository
-from schemas import GeneralStats, HeroStats, PlayerStatsData, StatsComparisonResponse
+from schemas import GeneralStats, HeroStats, PlayerStatsData, RoleStats, StatsComparisonResponse
 from services.player_stats_service import PlayerStatsService
 
 load_dotenv()
@@ -34,6 +35,7 @@ async def get_player_stats_from_overfast(
         stats.general = GeneralStats(**data["general"])
     if heroes:
         stats.heroes = [HeroStats(hero=hero, **values) for hero, values in (data.get("heroes") or {}).items()]
+    stats.roles = {role: RoleStats(**values) for role, values in (data.get("roles") or {}).items() if values}
     return stats
 
 
@@ -46,14 +48,22 @@ async def get_comparison_stats(session: Session = Depends(get_session)) -> Stats
     players = players_repository.get_all_players()
 
     async with httpx.AsyncClient(timeout=30) as client:
-        results = await asyncio.gather(
-            *(get_player_stats_from_overfast(client, player.username, general=True, heroes=True) for player in players),
-            return_exceptions=True,
-        )
+        results = await get_all_player_results(client, players)
 
     service = PlayerStatsService(stats_repository)
 
-    return service.compare(players, [_to_result(result) for result in results])
+    return service.compare(players, results)
+
+
+async def get_all_player_results(
+    client: httpx.AsyncClient, players: list[Players], **fields: bool
+) -> list[PlayerStatsData | str]:
+    """Each player's stats, or the error message to show in their place, in the order of `players`."""
+    results = await asyncio.gather(
+        *(get_player_stats_from_overfast(client, player.username, **fields) for player in players),
+        return_exceptions=True,
+    )
+    return [_to_result(result) for result in results]
 
 
 def _to_result(result: PlayerStatsData | BaseException) -> PlayerStatsData | str:

@@ -24,7 +24,6 @@ class PlayerStatsService:
         self.stats_repository = stats_repository
 
     def compare(self, players: list[Players], results: list[PlayerStatsData | str]) -> StatsComparisonResponse:
-        """Compare players using the stats already fetched for them; a str result is that player's error."""
         comparisons = [self._build_comparison(player, result) for player, result in zip(players, results)]
 
         snapshots = [

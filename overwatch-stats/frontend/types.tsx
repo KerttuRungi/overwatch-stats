@@ -36,3 +36,34 @@ export type StatsComparisonResponse = {
 	players: PlayerStatsComparison[]
 	most_wins: string[]
 }
+export type PlayerRoleProfile = {
+	username: string
+	avatar: string
+	main_role: string | null
+	role_hours: Record<string, number>
+	top_heroes: HeroStats[]
+	error: string | null
+}
+export type RoleAssignment = {
+	username: string
+	assigned_role: string
+	main_role: string
+	fit: number
+}
+export type RoleSuggestion = {
+	username: string
+	from_role: string
+	to_role: string
+	fit: number
+	message: string
+}
+export type TeamCompatibilityResponse = {
+	players: PlayerRoleProfile[]
+	assignments: RoleAssignment[]
+	open_slots: string[]
+	substitutes: string[]
+	score: number
+	compatible: boolean
+	warnings: string[]
+	suggestions: RoleSuggestion[]
+}

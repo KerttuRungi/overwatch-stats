@@ -4,8 +4,10 @@ import type {
   GeneralStats,
   PlayerStatsComparison,
   StatsComparisonResponse,
+  TeamCompatibilityResponse,
 } from "../../types";
 import { getComparisonStats } from "../api/routes/getComparisonStats";
+import { getTeamCompatibility } from "../api/routes/getTeamCompatibility";
 
 type StatRow = {
   label: string;
@@ -37,6 +39,10 @@ export default function ComparePage() {
   );
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [compatibility, setCompatibility] =
+    useState<TeamCompatibilityResponse | null>(null);
+  const [compatibilityError, setCompatibilityError] = useState("");
+  const [isCompatibilityLoading, setIsCompatibilityLoading] = useState(true);
 
   useEffect(() => {
     let ignore = false;
@@ -55,7 +61,24 @@ export default function ComparePage() {
         }
       })
       .finally(() => {
-        if (!ignore) setIsLoading(false);
+        if (ignore) return;
+        setIsLoading(false);
+        getTeamCompatibility()
+          .then((data) => {
+            if (!ignore) setCompatibility(data);
+          })
+          .catch((requestError) => {
+            if (!ignore) {
+              setCompatibilityError(
+                requestError instanceof Error
+                  ? requestError.message
+                  : "Unable to load team compatibility",
+              );
+            }
+          })
+          .finally(() => {
+            if (!ignore) setIsCompatibilityLoading(false);
+          });
       });
 
     return () => {
@@ -146,6 +169,74 @@ export default function ComparePage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {players.length > 0 && (
+        <section className="compatibility-card">
+          <h2>Team compatibility</h2>
+          {isCompatibilityLoading && <p>Loading team compatibility...</p>}
+          {compatibilityError && (
+            <p className="status-message error-message">
+              {compatibilityError}
+            </p>
+          )}
+          {compatibility && (
+            <>
+              <p>
+                Score: <strong>{compatibility.score}</strong> ·{" "}
+                {compatibility.compatible ? "Compatible" : "Not compatible"}
+              </p>
+
+              <h3>Role assignments</h3>
+              <ul>
+                {compatibility.assignments.map((assignment) => (
+                  <li key={assignment.username}>
+                    {assignment.username}: {assignment.assigned_role}{" "}
+                    <small>
+                      (main: {assignment.main_role}, fit{" "}
+                      {assignment.fit.toFixed(2)})
+                    </small>
+                  </li>
+                ))}
+              </ul>
+
+              {compatibility.open_slots.length > 0 && (
+                <>
+                  <h3>Open slots</h3>
+                  <p>{compatibility.open_slots.join(", ")}</p>
+                </>
+              )}
+              {compatibility.substitutes.length > 0 && (
+                <>
+                  <h3>Substitutes</h3>
+                  <p>{compatibility.substitutes.join(", ")}</p>
+                </>
+              )}
+              {compatibility.warnings.length > 0 && (
+                <>
+                  <h3>Warnings</h3>
+                  <ul>
+                    {compatibility.warnings.map((warning) => (
+                      <li key={warning}>{warning}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {compatibility.suggestions.length > 0 && (
+                <>
+                  <h3>Suggestions</h3>
+                  <ul>
+                    {compatibility.suggestions.map((suggestion) => (
+                      <li key={`${suggestion.username}-${suggestion.to_role}`}>
+                        {suggestion.message}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </>
+          )}
+        </section>
       )}
     </main>
   );

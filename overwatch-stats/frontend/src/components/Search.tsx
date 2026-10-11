@@ -13,6 +13,7 @@ type SearchProps = {
 function Search({ listedUsernames, onListChanged }: SearchProps) {
   const [battleTag, setBattleTag] = useState("");
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
+  const [searchedTag, setSearchedTag] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,6 +33,7 @@ function Search({ listedUsernames, onListChanged }: SearchProps) {
 
     try {
       setProfile(await getPlayer(trimmedTag));
+      setSearchedTag(trimmedTag);
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -70,7 +72,8 @@ function Search({ listedUsernames, onListChanged }: SearchProps) {
       {profile && (
         <PLayerCard
           profile={profile}
-          isInList={listedUsernames.has(profile.summary.username)}
+          isInList={listedUsernames.has(searchedTag)}
+          battleTag={searchedTag}
           onListChanged={onListChanged}
         />
       )}

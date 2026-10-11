@@ -1,32 +1,14 @@
-import { useMemo } from "react";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Search from "./components/Search";
-import PlayerList from "./components/PlayerList";
-import { usePlayerList } from "./hooks/usePlayerList";
+import HomePage from "./pages/HomePage";
+import ComparePage from "./pages/ComparePage";
 
 function App() {
-  const { players, error, isLoading, reload } = usePlayerList();
-  const listedUsernames = useMemo(
-    () => new Set(players.map((player) => player.username)),
-    [players],
-  );
-
   return (
-    <main className="app-shell">
-      <header className="page-header">
-        <p className="intro">
-          Search a BattleTag to pull up a player profile from Overfast.
-        </p>
-      </header>
-      <Search listedUsernames={listedUsernames} onListChanged={reload} />
-      <PlayerList
-        players={players}
-        isLoading={isLoading}
-        error={error}
-        onListChanged={reload}
-      />
-      <button className="justify-center items-center">compare stats</button>
-    </main>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/compare" element={<ComparePage />} />
+    </Routes>
   );
 }
 
